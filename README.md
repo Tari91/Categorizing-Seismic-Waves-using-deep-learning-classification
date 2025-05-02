@@ -13,21 +13,22 @@ Fully contained in a single script
 Exported version available in `.py` and `.xlsx`  
 
 
-
 📦 Requirements
 
 Install dependencies using:
 
-```bash
 pip install numpy matplotlib scikit-learn tensorflow
+
 
 🧪 How to Run
 python seismic_wave_classifier.py
+
 
 📊 Output
 Prints training and test accuracy
 
 Displays a graph showing training vs validation accuracy over epochs
+
 
 📁 Files Included
 seismic_wave_classifier.py — Main script
@@ -36,8 +37,7 @@ seismic_wave_classifier.xlsx — Excel format of the script (for reference or do
 
 README.md — Project overview and instructions
 
-🪪 License
-This software is open-source and free to use for research and educational purposes.
+
 
 👨‍💻 Author
 Tarinabo williamtarinabo@gmail.com
