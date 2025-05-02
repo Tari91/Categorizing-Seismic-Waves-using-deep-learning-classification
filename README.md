@@ -21,16 +21,19 @@ pip install numpy matplotlib scikit-learn tensorflow
 
 
 🧪 How to Run
+
 python seismic_wave_classifier.py
 
 
 📊 Output
+
 Prints training and test accuracy
 
 Displays a graph showing training vs validation accuracy over epochs
 
 
 📁 Files Included
+
 seismic_wave_classifier.py — Main script
 
 seismic_wave_classifier.xlsx — Excel format of the script (for reference or documentation)
