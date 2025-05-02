@@ -1,0 +1,80 @@
+# Seismic Wave Classification using Deep Learning (Synthetic Data)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, BatchNormalization
+
+# 1. Generate Synthetic Seismic Data
+def generate_waveform(wave_type, length=200):
+    t = np.linspace(0, 1, length)
+    if wave_type == 'P':
+        return np.sin(20 * np.pi * t) * np.exp(-5 * t)  # High-frequency
+    elif wave_type == 'S':
+        return np.sign(np.sin(5 * np.pi * t)) * np.exp(-3 * t)  # Square-like
+    elif wave_type == 'Surface':
+        return np.sin(3 * np.pi * t) + 0.2 * np.random.randn(length)  # Noisy low-frequency
+    else:
+        return np.zeros(length)
+
+# Create dataset
+num_samples = 3000
+X = []
+y = []
+
+for _ in range(num_samples):
+    wave_type = np.random.choice(['P', 'S', 'Surface'])
+    waveform = generate_waveform(wave_type)
+    X.append(waveform + 0.05 * np.random.randn(len(waveform)))  # Add noise
+    y.append(wave_type)
+
+X = np.array(X)
+y = np.array(y)
+
+# 2. Preprocess Data
+X = X[..., np.newaxis]  # reshape to (samples, time steps, channels)
+
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
+y_categorical = to_categorical(y_encoded)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y_categorical, test_size=0.2, random_state=42)
+
+# 3. Build CNN Model
+model = Sequential([
+    Conv1D(32, kernel_size=5, activation='relu', input_shape=X_train.shape[1:]),
+    BatchNormalization(),
+    MaxPooling1D(pool_size=2),
+
+    Conv1D(64, kernel_size=3, activation='relu'),
+    BatchNormalization(),
+    MaxPooling1D(pool_size=2),
+
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.3),
+    Dense(3, activation='softmax')  # 3 classes: P, S, Surface
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# 4. Train Model
+history = model.fit(X_train, y_train, epochs=15, batch_size=32, validation_split=0.2)
+
+# 5. Evaluate Model
+test_loss, test_acc = model.evaluate(X_test, y_test)
+print(f"Test accuracy: {test_acc:.2f}")
+
+# 6. Plot Training History
+plt.plot(history.history['accuracy'], label='Train')
+plt.plot(history.history['val_accuracy'], label='Validation')
+plt.title('Model Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.grid(True)
+plt.show()
